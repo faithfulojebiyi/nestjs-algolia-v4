@@ -1,6 +1,6 @@
 {
   "name": "nestjs-algolia-v4",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "The NestJS module for algolia based on the official algolia v4 package",
   "author": "Faithful Ojebiyi <faithfulojebiyi@gmail.com>",
   "license": "MIT",
@@ -21,6 +21,10 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faithfulojebiyi/nestjs-algolia-v4.git"
+  },
   "keywords": [
     "nestjs",
     "algolia",
@@ -28,6 +32,10 @@
     "search",
     "typescript"
   ],
+  "bugs": {
+    "url": "https://github.com/faithfulojebiyi/nestjs-algolia-v4/issues"
+  },
+  "homepage": "https://github.com/faithfulojebiyi/nestjs-algolia-v4#readme",
   "dependencies": {
     "algoliasearch": "^4.14.3"
   },
