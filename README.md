@@ -1,73 +1,109 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# nestjs-algolia
+The NestJS module for algolia based on the official algolia v4 package
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## How to install
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
+```
+npm install nestjs-algolia-v4
 ```
 
-## Running the app
+or
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+yarn add nestjs-algolia-v4
 ```
 
-## Test
+## How to use
 
-```bash
-# unit tests
-$ npm run test
+**Register the module**
 
-# e2e tests
-$ npm run test:e2e
+```
+import { AlgoliaModule } from 'nestjs-algolia-v4';
 
-# test coverage
-$ npm run test:cov
+@Module({
+  imports: [
+    AlgoliaModule.register({
+      appId: 'YOUR_APPLICATION_ID',
+      apiKey: 'YOUR_API_KEY',
+    }),
+  ],
+})
+export class AppModule {}
 ```
 
-## Support
+**Inject the service**
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+import { AlgoliaService } from 'nestjs-algolia-v4';
 
-## Stay in touch
+@Injectable()
+export class AppService {
+  constructor(private readonly algoliaService: AlgoliaService) {}
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+  saveObjectOnIndex(
+    indexName: string,
+    record: any,
+  ): Promise<any> {
+    const index = this.algoliaService.initIndex(indexName);
 
-## License
+    return index.saveObject(record);
+  }
+}
+```
 
-Nest is [MIT licensed](LICENSE).
+## Async options
+### Use factory
+The useFactory syntax allows for creating providers dynamically.
+
+```
+AlgoliaModule.registerAsync({
+  useFactory: () => ({
+    appId: 'YOUR_APPLICATION_ID',
+    apiKey: 'YOUR_API_KEY',
+  }),
+});
+```
+
+### OR
+
+```
+AlgoliaModule.registerAsync({
+  imports: [ConfigModule],
+  useFactory: async (configService: ConfigService) => ({
+    appId: configService.getString('ALGOLIA_APPLICATION_ID'),
+    apiKey: configService.getString('ALGOLIA_API_KEY'),
+  }),
+  inject: [ConfigService],
+}),
+```
+
+### Use class
+The useClass syntax allows you to dynamically determine a class that a token should resolve to. For example, suppose we have an abstract (or default) ConfigService class. 
+
+```
+AlgoliaModule.registerAsync({
+  useClass: AlgoliaConfigService,
+});
+```
+
+Above construction will instantiate `AlgoliaConfigService` inside `AlgoliaModule` and will leverage it to create options object.
+
+```
+class AlgoliaConfigService implements AlgoliaConfigFactory {
+  createAlgoliaConfig(): AlgoliaModuleConfig {
+    return {
+      appId: 'YOUR_APPLICATION_ID',
+      apiKey: 'YOUR_API_KEY',
+    };
+  }
+}
+```
+
+### Use existing
+The useExisting syntax allows you to create aliases for existing providers.
+
+```
+AlgoliaModule.registerAsync({
+  imports: [ConfigModule],
+  useExisting: ConfigService,
+}),
