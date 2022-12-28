@@ -1,7 +1,7 @@
 {
   "name": "nestjs-algolia-v4",
   "version": "0.0.1",
-  "description": "The NestJS module for algolia based on the official aloglia v4 package",
+  "description": "The NestJS module for algolia based on the official algolia v4 package",
   "author": "Faithful Ojebiyi <faithfulojebiyi@gmail.com>",
   "license": "MIT",
   "main": "dist/index.js",
